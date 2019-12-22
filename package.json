@@ -1,0 +1,28 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "Repo for my advent of code solutions",
+  "main": "index.js",
+  "scripts": {
+    "start": "set YEAR=2019&& node index.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pwntheon/AdventOfCode.git"
+  },
+  "author": "Pwntheon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pwntheon/AdventOfCode/issues"
+  },
+  "homepage": "https://github.com/Pwntheon/AdventOfCode#readme",
+  "devDependencies": {
+    "shelljs": "^0.8.3"
+  },
+  "dependencies": {
+    "@arrows/composition": "^1.2.1",
+    "get-caller-file": "^2.0.5",
+    "kleur": "^3.0.3"
+  }
+}
