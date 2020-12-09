@@ -1,7 +1,6 @@
 const { isDeepStrictEqual } = require("util")
 const kleur = require("kleur")
 const { curry } = require("@arrows/composition")
-
 let index = 0
 
 const test = curry((result, expected) => {

@@ -4,7 +4,7 @@
   "description": "Repo for my advent of code solutions",
   "main": "index.js",
   "scripts": {
-    "start": "set YEAR=2019&& node index.js",
+    "start": "set YEAR=2020&& node index.js",
     "test": "test"
   },
   "repository": {
@@ -23,6 +23,7 @@
   "dependencies": {
     "@arrows/composition": "^1.2.1",
     "get-caller-file": "^2.0.5",
-    "kleur": "^3.0.3"
+    "kleur": "^3.0.3",
+    "util": "^0.12.3"
   }
 }
