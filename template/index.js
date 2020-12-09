@@ -1,5 +1,5 @@
 const { test, readInput } = require("../../utils");
-
+console.clear();
 const prepareInput = (rawInput) => {
     let input = rawInput;
     

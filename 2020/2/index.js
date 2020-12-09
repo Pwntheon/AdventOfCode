@@ -1,18 +1,19 @@
 const { test, readInput } = require("../../utils");
 const { EOL } = require('os');
+console.clear();
 
 const prepareInput = (rawInput) => {
-    let input = rawInput;
-    return input.split(EOL).map(l => {
-      let [length, character, pw] = l.split(" ");
-      let [min, max] = length.split("-");
-      return {
-        min: min,
-        max: max,
-        character: character[0],
-        pw: pw
-      };
-    });
+  let input = rawInput;
+  return input.split(EOL).map(l => {
+    let [length, character, pw] = l.split(" ");
+    let [first, last] = length.split("-");
+    return {
+      first: parseInt(first, 10),
+      last: parseInt(last, 10),
+      character: character[0],
+      pw: pw
+    };
+  });
 };
 
 const input = prepareInput(readInput())
@@ -23,9 +24,14 @@ function countChar(input, char) {
 function valid1(input) {
   return input.reduce((acc, curr) => {
     const count = countChar(curr.pw, curr.character);
-    if(count >= curr.min && count <= curr.max) return acc+1;
+    if (count >= curr.first && count <= curr.last) return acc + 1;
     return acc;
   }, 0);
+}
+function valid2(input) {
+  return input.filter(entry => {
+    return (entry.pw.split("")[entry.first - 1] === entry.character) != (entry.pw.split("")[entry.last - 1] === entry.character);
+  }).length;
 }
 
 const goA = (input) => {
@@ -33,7 +39,7 @@ const goA = (input) => {
 }
 
 const goB = (input) => {
-  return "b result"
+  return valid2(input);
 }
 
 /* Tests */
