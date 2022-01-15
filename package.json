@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/Pwntheon/AdventOfCode#readme",
   "devDependencies": {
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.5"
   },
   "dependencies": {
     "@arrows/composition": "^1.2.1",
