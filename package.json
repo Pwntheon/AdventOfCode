@@ -4,7 +4,7 @@
   "description": "Repo for my advent of code solutions",
   "main": "index.js",
   "scripts": {
-    "start": "set YEAR=2020&& node index.js",
+    "start": "set YEAR=2022&& node index.js",
     "test": "test"
   },
   "repository": {
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Pwntheon/AdventOfCode#readme",
   "devDependencies": {
+    "nodemon": "^2.0.20",
     "shelljs": "^0.8.3"
   },
   "dependencies": {

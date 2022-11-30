@@ -1,5 +1,5 @@
-const { readFileSync } = require("fs")
-const getCallerFile = require("get-caller-file")
+const { readFileSync } = require("fs");
+const getCallerFile = require("get-caller-file");
 
 const readInput = () => {
   console.log(getCallerFile());
@@ -7,9 +7,9 @@ const readInput = () => {
     .split("\\")
     .slice(0, -1)
     .concat("input.txt")
-    .join("\\")
+    .join("\\");
 
-  return readFileSync(file).toString()
+  return readFileSync(file).toString();
 }
 
-module.exports = readInput
+module.exports = readInput;
