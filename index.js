@@ -1,7 +1,7 @@
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const { readdirSync, readFile, writeFile, existsSync } = require("fs");
-const { get } = require("https");
 const { cp } = require("shelljs");
+const open = require("open");
 
 let cookies = null;
 if(existsSync("./cookies.json")) {
@@ -11,8 +11,6 @@ if(existsSync("./cookies.json")) {
     console.log("To enable, create a cookies.json file in root with your session cookie formatted like this:")
     console.log(`[{"name":"session","value":"yoursessioncookie"}]`);
 }
-
-console.log(cookies);
 
 const year = process.env.YEAR;
 const day = process.argv[2];
@@ -48,7 +46,10 @@ readFile(inputFile, 'utf8', (err, data) => {
     }
 })
 
+exec(`code ./${year}/${day}/index.js`);
 
 spawn('nodemon.cmd', [`./${year}/${day}/index.js`], {
     stdio: 'inherit'
 });
+
+open(`https://adventofcode.com/${year}/day/${day}`);
