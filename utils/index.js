@@ -1,4 +1,5 @@
 module.exports = {
   test: require("./test"),
-  input: require("./input")
+  utils: require("./utils"),
+  InputParser: require("./input")
 }

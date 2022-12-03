@@ -1,19 +1,17 @@
-const { test, readInput } = require("../../utils");
+const { test, utils, InputParser } = require("../../utils");
 console.clear();
-const prepareInput = (rawInput) => {
-    let input = rawInput;
-    
-    return input;
-};
 
-const input = prepareInput(readInput())
+const input = new InputParser()
+  .finish();
 
-const goA = (input) => {
-  return "a result"
+const goA = (data) => {
+  let result = ["data: ", data];
+  return result;
 }
 
-const goB = (input) => {
-  return "b result"
+const goB = (data) => {
+  let result = ["data: ", data];
+  return result
 }
 
 /* Tests */
