@@ -34,21 +34,38 @@ const goA = (data) => {
 }
 
 const goB = (data) => {
-  let result = "";
+  data = data.map(transpose);
+  let result = getScore(data);
   return result;
 }
 
-/* Tests */
+function transpose([a, b]) {
+  return [a,
+    (a + b - 1 + 3) % 3
+  ]
+}
 
-test(didWin([values.A, values.A]), 0);
-test(didWin([values.B, values.B]), 0);
-test(didWin([values.C, values.C]), 0);
-test(didWin([values.B, values.A]), -1);
-test(didWin([values.C, values.B]), -1);
-test(didWin([values.A, values.C]), -1);
-test(didWin([values.A, values.B]), 1);
-test(didWin([values.B, values.C]), 1);
-test(didWin([values.C, values.A]), 1);
+/* Tests */ 
+
+// test(didWin([values.A, values.A]), 0);
+// test(didWin([values.B, values.B]), 0);
+// test(didWin([values.C, values.C]), 0);
+// test(didWin([values.B, values.A]), -1);
+// test(didWin([values.C, values.B]), -1);
+// test(didWin([values.A, values.C]), -1);
+// test(didWin([values.A, values.B]), 1);
+// test(didWin([values.B, values.C]), 1);
+// test(didWin([values.C, values.A]), 1);
+
+test(transpose([0, 0]), [0, 2]);
+test(transpose([0, 1]), [0, 0]);
+test(transpose([0, 2]), [0, 1]);
+test(transpose([1, 0]), [1, 0]);
+test(transpose([1, 1]), [1, 1]);
+test(transpose([1, 2]), [1, 2]);
+test(transpose([2, 0]), [2, 1]);
+test(transpose([2, 1]), [2, 2]);
+test(transpose([2, 2]), [2, 0]);
 
 /* Results */
 
