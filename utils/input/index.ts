@@ -4,30 +4,35 @@ import getCallerFile from "get-caller-file";
 type DataType = string | string[] | string[][] | number | number[];
 
 // Seems weirdly repetitive
-export interface InputParserStringsArray {
-  finish: () => string[][];
-  do: (fn: (data: string[][]) => string[][]) => InputParserStringsArray;
-  forEach: (fn: (data: string[]) => string[]) => InputParserStringsArray;
-}
 
 export interface InputParserString {
   finish: () => string;
   do: (fn: (data: string) => string) => InputParserString;
   splitOnNewline: () => InputParserStrings;
   toInt: (radix?: number) => InputParserNumber;
+  clone: () => InputParserString;
 }
 
 export interface InputParserStrings {
   finish: () => string[];
   do: (fn: (data: string[]) => string[]) => InputParserStrings;
   forEach: (fn: (data: string) => string) => InputParserStrings;
-  toInt: (radix?: number) => InputParserNumbers
-  splitOnEmpty: () => InputParserStringsArray
+  toInt: (radix?: number) => InputParserNumbers;
+  splitOnEmpty: () => InputParserStringsArray;
+  clone: () => InputParserStrings;
+}
+
+export interface InputParserStringsArray {
+  finish: () => string[][];
+  do: (fn: (data: string[][]) => string[][]) => InputParserStringsArray;
+  forEach: (fn: (data: string[]) => string[]) => InputParserStringsArray;
+  clone: () => InputParserStringsArray;
 }
 
 export interface InputParserNumber {
   finish: () => number;
   do: (fn: (data: number) => number) => InputParserNumber;
+  clone: () => InputParserNumber;
 }
 
 export interface InputParserNumbers {
@@ -35,6 +40,7 @@ export interface InputParserNumbers {
   do: (fn: (data: number[]) => number[]) => InputParserNumbers;
   forEach: (fn: (data: number) => number) => InputParserNumbers;
   sum: () => InputParserNumber;
+  clone: () => InputParserNumbers;
 }
 
 
@@ -95,6 +101,10 @@ export default class InputParser<T extends DataType> {
       else data.push([]);
     }
     return new InputParser(data);
+  }
+
+  clone() {
+    return new InputParser(structuredClone(this.data));
   }
 }
 

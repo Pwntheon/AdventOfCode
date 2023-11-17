@@ -52,6 +52,7 @@ readFile(inputFile, "utf8")
           }
         }).then((response) => response.text())
           .then((text) => {
+            // Remove trailing newline(s) to simplify input parsing
             while(text.charCodeAt(text.length-1) === 10) text = text.slice(0, -1);
             writeFile(inputFile, text, () => 0);
           });
