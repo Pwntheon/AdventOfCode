@@ -1,7 +1,3 @@
-function sum(array) {
+export function sum(array: number[]) {
     return array.reduce((acc, curr) => acc + curr, 0);
-}
-
-module.exports = {
-    sum
 }

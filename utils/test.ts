@@ -1,7 +1,8 @@
-const { isDeepStrictEqual } = require("util")
-const kleur = require("kleur")
-const { curry } = require("@arrows/composition")
-let index = 0
+import { isDeepStrictEqual } from "util";
+import kleur from "kleur";
+import { curry } from "@arrows/composition";
+
+let index = 0;
 
 const test = curry((result, expected) => {
   const passed = isDeepStrictEqual(result, expected)
@@ -21,4 +22,6 @@ const test = curry((result, expected) => {
   index++
 })
 
-module.exports = test
+export {
+  test
+};

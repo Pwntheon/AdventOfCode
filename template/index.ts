@@ -1,21 +1,16 @@
-const { test, utils, InputParser } = require("../../utils");
+import { h, test, InputParser } from "#root/utils/index.ts";
 console.clear();
 
-const input = new InputParser()
-  .splitOnNewline()
-  .splitOnEmpty()
-  .toInt()
-  .forEach(d => utils.sum(d))
-  .finish();
+const input = InputParser.load()
 
 const goA = (data) => {
-  let result = data.sort((a, b) => b - a)[0];
+  let result = "Not solved";
   return result;
 }
 
 const goB = (data) => {
-  let result = utils.sum(data.sort((a, b) => b - a).slice(0, 3));
-  return result
+  let result = "Not solved";
+  return result;
 }
 
 /* Tests */
