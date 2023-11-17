@@ -108,3 +108,6 @@ dist
 
 # Secrets
 cookies.json
+
+# Input files for puzzles
+input.txt
