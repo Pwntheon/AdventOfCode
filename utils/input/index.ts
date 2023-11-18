@@ -8,8 +8,6 @@ export interface InputParserStringsArray {
   finish: () => string[][];
   do: (fn: (data: string[][]) => string[][]) => InputParserStringsArray;
   forEach: (fn: (data: string[]) => string[]) => InputParserStringsArray;
-  filter: (fn: (data: string[]) => boolean) => InputParserStringsArray;
-  length: () => number;
 }
 
 export interface InputParserString {
@@ -17,22 +15,20 @@ export interface InputParserString {
   do: (fn: (data: string) => string) => InputParserString;
   splitOnNewline: () => InputParserStrings;
   toInt: (radix?: number) => InputParserNumber;
-  toArray: (separator?: string) => InputParserStrings
 }
 
 export interface InputParserStrings {
   finish: () => string[];
   do: (fn: (data: string[]) => string[]) => InputParserStrings;
   forEach: (fn: (data: string) => string) => InputParserStrings;
-  filter: (fn: (data: string) => boolean) => InputParserStrings;
-  toInt: (radix?: number) => InputParserNumbers;
-  splitOnEmpty: () => InputParserStringsArray;
-  length: () => number;
+  toInt: (radix?: number) => InputParserNumbers
+  splitOnEmpty: () => InputParserStringsArray
 }
 
 export interface InputParserNumber {
   finish: () => number;
   do: (fn: (data: number) => number) => InputParserNumber;
+  clone: () => InputParserNumber;
 }
 
 export interface InputParserNumbers {
@@ -41,7 +37,6 @@ export interface InputParserNumbers {
   forEach: (fn: (data: number) => number) => InputParserNumbers;
   filter: (fn: (data: number) => boolean) => InputParserNumbers;
   sum: () => InputParserNumber;
-  length: () => number;
 }
 
 export default class InputParser<T extends DataType> {
@@ -124,6 +119,10 @@ export default class InputParser<T extends DataType> {
     }
     if (this.debug) console.log(this.data);
     return new InputParser(data);
+  }
+
+  clone() {
+    return new InputParser(structuredClone(this.data));
   }
 }
 
