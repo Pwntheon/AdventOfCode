@@ -7,7 +7,7 @@ const input = InputParser.load()
   .toInt()
 
 function getFuelPerPart(weight: number) {
-  return Math.floor(weight / 3) - 2;
+  return Math.max(0, Math.floor(weight / 3) - 2);
 }
 
 const goA = (data: InputParserNumbers) => {
@@ -16,8 +16,15 @@ const goA = (data: InputParserNumbers) => {
 }
 
 const goB = (data: InputParserNumbers) => {
-  let result = data.finish();
-  return result
+  let total = 0;
+  while (data.length() > 0) {
+    data = data.forEach(e => {
+      const fuelCost = getFuelPerPart(e);
+      total += fuelCost;
+      return fuelCost;
+    }).filter(e => e > 0);
+  }
+  return total;
 }
 
 /* Tests */
