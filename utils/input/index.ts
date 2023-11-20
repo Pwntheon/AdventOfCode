@@ -8,6 +8,7 @@ export interface InputParserStringsArray {
   finish: () => string[][];
   do: (fn: (data: string[][]) => string[][]) => InputParserStringsArray;
   forEach: (fn: (data: string[]) => string[]) => InputParserStringsArray;
+  clone: () => InputParserStringsArray;
 }
 
 export interface InputParserString {
@@ -15,14 +16,17 @@ export interface InputParserString {
   do: (fn: (data: string) => string) => InputParserString;
   splitOnNewline: () => InputParserStrings;
   toInt: (radix?: number) => InputParserNumber;
+  toArray: (separator?: string) => InputParserStrings;
+  clone: () => InputParserString;
 }
 
 export interface InputParserStrings {
   finish: () => string[];
   do: (fn: (data: string[]) => string[]) => InputParserStrings;
   forEach: (fn: (data: string) => string) => InputParserStrings;
-  toInt: (radix?: number) => InputParserNumbers
-  splitOnEmpty: () => InputParserStringsArray
+  toInt: (radix?: number) => InputParserNumbers;
+  splitOnEmpty: () => InputParserStringsArray;
+  clone: () => InputParserStrings;
 }
 
 export interface InputParserNumber {
@@ -37,6 +41,7 @@ export interface InputParserNumbers {
   forEach: (fn: (data: number) => number) => InputParserNumbers;
   filter: (fn: (data: number) => boolean) => InputParserNumbers;
   sum: () => InputParserNumber;
+  clone: () => InputParserNumbers;
 }
 
 export default class InputParser<T extends DataType> {
@@ -57,8 +62,8 @@ export default class InputParser<T extends DataType> {
     return new InputParser(readFileFromFolder(folder, filename), debug) as InputParserString;
   }
 
-  static fromLiteral(data: DataType) {
-    return new InputParser(data);
+  static fromLiteral(data: DataType, debug = true) {
+    return new InputParser(data, debug);
   }
 
   finish() {
@@ -76,39 +81,39 @@ export default class InputParser<T extends DataType> {
   sum() {
     const data = (this.data as number[])
       .reduce((acc, curr) => acc + curr, 0);
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After sum", this.data);
+    return new InputParser(data, this.debug);
   }
 
   filter(fn) {
     const data = (this.data as [])
       .filter(fn);
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After filter", this.data);
+    return new InputParser(data, this.debug);
   }
 
   forEach(fn) {
     const data = (this.data as any[]).map(d => fn(d));
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After forEach", this.data);
+    return new InputParser(data, this.debug);
   }
 
   splitOnNewline() {
     const data = (this.data as string).split(/\r?\n/);
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After splitOnNewline", this.data);
+    return new InputParser(data, this.debug);
   }
 
   toInt(radix = 10) {
     const data = deepConvert(this.data, d => parseInt(d, radix));
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After toInt", this.data);
+    return new InputParser(data, this.debug);
   }
 
   toArray(separator = ",") {
     const data = (this.data as string).split(separator);
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After toArray", this.data);
+    return new InputParser(data, this.debug);
   }
 
   splitOnEmpty() {
@@ -117,8 +122,8 @@ export default class InputParser<T extends DataType> {
       if (line.length) data[data.length - 1].push(line);
       else data.push([]);
     }
-    if (this.debug) console.log(this.data);
-    return new InputParser(data);
+    if (this.debug) console.log("After splitOnEmpty", this.data);
+    return new InputParser(data, this.debug);
   }
 
   clone() {
