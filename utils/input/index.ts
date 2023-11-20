@@ -54,7 +54,7 @@ export default class InputParser<T extends DataType> {
     this.data = input;
   }
 
-  static load(filename?: string, debug = true) {
+  static load(filename?: string, debug = false) {
     const folder = (getCallerFile() as string)
       .split("/")
       .slice(-3, -1)
@@ -62,7 +62,7 @@ export default class InputParser<T extends DataType> {
     return new InputParser(readFileFromFolder(folder, filename), debug) as InputParserString;
   }
 
-  static fromLiteral(data: DataType, debug = true) {
+  static fromLiteral(data: DataType, debug = false) {
     return new InputParser(data, debug);
   }
 

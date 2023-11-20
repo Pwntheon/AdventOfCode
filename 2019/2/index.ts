@@ -3,14 +3,14 @@ import Computer from "../intcode/index.ts";
 
 console.clear();
 
-const input = InputParser.load(undefined, false).toArray().toInt();
+const input = InputParser.load().toArray().toInt();
 
 const goA = (data) => {
   const computer = new Computer(data);
   computer.write(1, 12);
   computer.write(2, 2);
   computer.run();
-  let result = computer.read(0);
+  let result = computer.read(0); 
   return result;
 }
 
@@ -26,9 +26,9 @@ const goB = (data) => {
       computer.write(2, result.verb);
       computer.run();
       result.result = computer.read(0);
-      console.log("Noun " + result.noun + " & verb " + result.verb + " = " + result);
-    }
+    } 
   }
+  console.log("Noun " + result.noun + " & verb " + result.verb + " = " + result.result);
   return (result.noun - 1) * 100 + result.verb - 1;
 }
 
@@ -53,9 +53,9 @@ test(testComputer.memory.join(", "), [30, 1, 1, 4, 2, 5, 6, 0, 99].join(", "));
 
 /* Results */
 
-console.time("Time")
-const resultA = goA(input.clone().finish())
-console.log("Solution to part 1:", resultA)
-const resultB = goB(input)
-console.log("Solution to part 2:", resultB)
-console.timeEnd("Time")
+console.time("Time");
+const resultA = goA(input.clone().finish());
+console.log("Solution to part 1:", resultA);
+const resultB = goB(input);
+console.log("Solution to part 2:", resultB);
+console.timeEnd("Time");
