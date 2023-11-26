@@ -17,6 +17,7 @@ export interface InputParserString {
   splitOnNewline: () => InputParserStrings;
   toInt: (radix?: number) => InputParserNumber;
   toArray: (separator?: string) => InputParserStrings;
+  enableDebug: () => InputParserString;
   clone: () => InputParserString;
 }
 
@@ -25,6 +26,7 @@ export interface InputParserStrings {
   do: (fn: (data: string[]) => string[]) => InputParserStrings;
   forEach: (fn: (data: string) => string) => InputParserStrings;
   toInt: (radix?: number) => InputParserNumbers;
+  split: (token?: string) => InputParserStringsArray;
   splitOnEmpty: () => InputParserStringsArray;
   clone: () => InputParserStrings;
 }
@@ -66,8 +68,13 @@ export default class InputParser<T extends DataType> {
     return new InputParser(data, debug);
   }
 
+  enableDebug() {
+    this.debug = true;
+    return this;
+  }
+
   finish() {
-    return this.data;
+    return structuredClone(this.data);
   }
 
   do(fn) {
@@ -116,6 +123,14 @@ export default class InputParser<T extends DataType> {
     return new InputParser(data, this.debug);
   }
 
+  split(token = ",") {
+    const data: string[][] = [];
+    for(const line of this.data as string[]) {
+      data.push(line.split(token));
+    }
+    return new InputParser(data, this.debug);
+  }
+
   splitOnEmpty() {
     const data: string[][] = [[]];
     for (const line of this.data as string[]) {
@@ -127,7 +142,7 @@ export default class InputParser<T extends DataType> {
   }
 
   clone() {
-    return new InputParser(structuredClone(this.data));
+    return new InputParser(structuredClone(this.data), this.debug);
   }
 }
 

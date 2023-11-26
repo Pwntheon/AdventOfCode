@@ -26,10 +26,11 @@ test(InputParser.load().finish().length > 0, true, "has input");
 
 /* Results */
 
-console.time("Time");
+console.time("Part 1");
 const resultA = solveA(input.clone());
-const resultB = solveB(input.clone());
-console.timeEnd("Time");
-
+console.timeEnd("Part 1");
 console.log("Solution to part 1:", resultA);
+console.time("Part 2");
+const resultB = solveB(input.clone());
+console.timeEnd("Part 2");
 console.log("Solution to part 2:", resultB);
