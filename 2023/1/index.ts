@@ -53,7 +53,6 @@ function* fromEnd(line: string) {
 }
 
 const pattern = new RegExp(`([0-9]|${mappings.map(m => m[0]).join("|")})`);
-console.log(pattern);
 
 const solveA = (data: InputParserString) => {
   let parsed = data.splitOnNewline().split("").finish();
