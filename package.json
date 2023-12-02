@@ -8,7 +8,7 @@
     "#root/*": "./*"
   },
   "scripts": {
-    "start": "set YEAR=2019&&set NODE_PATH=./&& node --loader ts-node/esm index.ts",
+    "start": "set YEAR=2023&&set NODE_PATH=./&& node --loader ts-node/esm index.ts",
     "test": "test"
   },
   "repository": {

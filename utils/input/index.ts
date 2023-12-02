@@ -88,38 +88,38 @@ export default class InputParser<T extends DataType> {
   sum() {
     const data = (this.data as number[])
       .reduce((acc, curr) => acc + curr, 0);
-    if (this.debug) console.log("After sum", this.data);
+    if (this.debug) console.log("After sum", data);
     return new InputParser(data, this.debug);
   }
 
   filter(fn) {
     const data = (this.data as [])
       .filter(fn);
-    if (this.debug) console.log("After filter", this.data);
+    if (this.debug) console.log("After filter", data);
     return new InputParser(data, this.debug);
   }
 
   forEach(fn) {
     const data = (this.data as any[]).map(d => fn(d));
-    if (this.debug) console.log("After forEach", this.data);
+    if (this.debug) console.log("After forEach", data);
     return new InputParser(data, this.debug);
   }
 
   splitOnNewline() {
     const data = (this.data as string).split(/\r?\n/);
-    if (this.debug) console.log("After splitOnNewline", this.data);
+    if (this.debug) console.log("After splitOnNewline", data);
     return new InputParser(data, this.debug);
   }
 
   toInt(radix = 10) {
     const data = deepConvert(this.data, d => parseInt(d, radix));
-    if (this.debug) console.log("After toInt", this.data);
+    if (this.debug) console.log("After toInt", data);
     return new InputParser(data, this.debug);
   }
 
   toArray(separator = ",") {
     const data = (this.data as string).split(separator);
-    if (this.debug) console.log("After toArray", this.data);
+    if (this.debug) console.log("After toArray", data);
     return new InputParser(data, this.debug);
   }
 
