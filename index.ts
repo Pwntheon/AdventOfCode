@@ -40,7 +40,7 @@ const inputFile = ["."]
   .concat("input.txt")
   .join("\\");
 
-
+if(!existsSync(inputFile)) writeFile(inputFile, "", () => 0);
 
 readFile(inputFile, "utf8")
   .then(inputData => {
@@ -70,7 +70,8 @@ if (!init) {
   open(`https://adventofcode.com/${year}/day/${day}`);
 }
 
-spawn('nodemon.cmd', ["--exec", "node", "--loader", "ts-node/esm", `./${year}/${day}/index.ts`], {
-  stdio: 'inherit'
+spawn('tsx.cmd', ["watch", `./${year}/${day}/index.ts`], {
+  stdio: 'inherit',
+  shell: true
 });
 
