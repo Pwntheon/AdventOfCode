@@ -1,36 +1,34 @@
-import { h, test, InputParser } from "#root/utils/index.ts";
-import {
-  InputParserString,
-  InputParserNumber,
-  InputParserNumbers,
-  InputParserStrings,
-  InputParserStringsArray
-} from "#root/utils/input";
-console.clear();
+import { test, load, pipe } from "@utils";
 
-const input = InputParser.load();
+// Create pipe. Add input parsing steps with .then()
+const parseInput = pipe<string>()
 
-const solveA = (data: InputParserString) => {
-  let result = "Not solved";
+// Load data, and expose testing functions.
+// data is loaded from ./input.txt
+// loadRaw uses an inline string to load data, useful for short examples
+// loadFile loads content of ./{filename} useful for more elaborate examples
+const {data, loadRaw, loadFile} = load(parseInput);
+
+const part1 = (input: typeof data) => {
+  let result = "";
   return result;
 };
 
-const solveB = (data: InputParserString) => {
-  let result = "Not solved";
+const part2 = (input: typeof data) => {
+  let result = "";
   return result;
 };
 
-/* Tests */
 // Base test - check that input is not empty
-test(InputParser.load().finish().length > 0, true, "has input");
+test(load(d => d).data.length > 0, true, "Has input");
 
-/* Results */
-
+// Time and log results
 console.time("Part 1");
-const resultA = solveA(input.clone());
+const resultA = part1(data);
 console.timeEnd("Part 1");
-console.log("Solution to part 1:", resultA);
+console.log("First answer:", resultA);
+
 console.time("Part 2");
-const resultB = solveB(input.clone());
+const resultB = part2(data);
 console.timeEnd("Part 2");
-console.log("Solution to part 2:", resultB);
+console.log("Second answer:", resultB);

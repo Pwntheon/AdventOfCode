@@ -4,11 +4,8 @@
   "description": "Repo for my advent of code solutions",
   "type": "module",
   "main": "index.ts",
-  "imports": {
-    "#root/*": "./*"
-  },
   "scripts": {
-    "start": "set YEAR=2023&&set NODE_PATH=./&& tsx index.ts",
+    "start": "set YEAR=2019&&set NODE_PATH=./&& tsx index.ts",
     "test": "test"
   },
   "repository": {
@@ -29,7 +26,6 @@
   },
   "dependencies": {
     "@arrows/composition": "^1.2.2",
-    "get-caller-file": "^2.0.5",
     "kleur": "^4.1.5",
     "open": "^9.1.0",
     "typescript": "^5.2.2",

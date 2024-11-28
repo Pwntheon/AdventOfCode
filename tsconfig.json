@@ -16,8 +16,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "#root/*": [
-        "./*"
+      "@utils": [
+        "./utils/index"
       ]
     }
   },
