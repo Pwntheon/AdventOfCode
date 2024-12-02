@@ -10,6 +10,24 @@ function sum(i: number[]) {
     return i.reduce((acc,curr) => acc+curr, 0);
 }
 
+function rotate<T extends any[][]>(i: T): T {
+    let result = [] as unknown[][];
+    i.forEach((col, y) => col.forEach((e, x) => {
+        result[x] ??= [];
+        result[x][y] = e;
+    }))
+    return result as T;
+}
+
+function split(token: string | null) {
+    const splitter = typeof token === "string" 
+        ? (i: string) => i.trim().split(token)
+        : (i: string) => i.trim().split(/\s+/);
+    return (i: string[]) => {
+        return i.map(splitter);
+    }
+}
+
 /*
 For some reason this doesn't work with pipe, it misreads the result type :\
 Thus, we make it internal and export explicit versions.
@@ -34,6 +52,8 @@ export {
     lines,
     map,
     sum,
+    split,
+    rotate,
     toInt, // plural
     toIntS // singular
 };
