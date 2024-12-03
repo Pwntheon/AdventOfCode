@@ -10,6 +10,10 @@ function sum(i: number[]) {
     return i.reduce((acc,curr) => acc+curr, 0);
 }
 
+function match(exp: RegExp) {
+    return (i: string) => Array.from(i.matchAll(exp), e => e[0]);
+}
+
 function rotate<T extends any[][]>(i: T): T {
     let result = [] as unknown[][];
     i.forEach((col, y) => col.forEach((e, x) => {
@@ -54,6 +58,7 @@ export {
     sum,
     split,
     rotate,
+    match,
     toInt, // plural
     toIntS // singular
 };
