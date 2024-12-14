@@ -48,6 +48,38 @@ export default class Grid {
     ({x, y} = this.#posFromCoords(x, y)!);
     const index = y * this.width + (x % this.width);
     return this.data[index];
+  } 
+
+  getRelativePos(pos: position, x: number, y: number) {
+    return this.#posFromCoords(pos.x + x, pos.y + y);
+  }
+
+  write(x: number, y: number, character: string) {
+    ({x, y} = this.#posFromCoords(x, y)!);
+    const index = y * this.width + (x % this.width);
+    this.data = this.data.substring(0, index) + character + this.data.substring(index+1);
+  }
+
+  find(character: string) {
+    for(const node of this.nodes()) {
+      if(node.data() === character) return node;
+    }
+  }
+
+  findAll(character: string) {
+    let result: node[] = [];
+    for(const node of this.nodes()) {
+      if(node.data() === character) result.push(node);
+    }
+    return result;
+  }
+
+  toString() {
+    let result = "";
+    for(let i = 0; i < this.height; ++i) {
+      result += this.data.substring(i * this.width, (i+1) * this.width) + "\r\n";
+    }
+    return result;
   }
 
   *edges(x: number, y: number) {
@@ -74,6 +106,16 @@ export default class Grid {
     }
   }
 
+  *getVector(start: position, next: position) {
+    const delta = this.#delta(start, next);
+    let current: position | null = start;
+    let steps = 0;
+    while(current !== null && ++steps < readMax) {
+        yield this.node(current.x, current.y);
+        current = this.#posFromCoords(current.x + delta.x, current.y + delta.y);
+    }
+  }
+
   #posFromCoords(x: number, y: number): position | null {
     if (this.wrap) {
       x = (x + this.width) % this.width;
@@ -94,8 +136,13 @@ export default class Grid {
   }
 }
 
-type position = { x: number; y: number };
+export type position = { x: number; y: number };
 
+export type node = {
+  data: () => string,
+  edges: () => Generator<node, any, any>,
+  pos: () => position
+}
 
 function equal(first: position, second: position) {
     return first.x === second.x && first.y === second.y;
@@ -103,4 +150,19 @@ function equal(first: position, second: position) {
 
 function absMin(...numbers: number[]) {
     return numbers.reduce((acc, curr) => Math.abs(curr) < Math.abs(acc) ? curr : acc, numbers[0]);
+}
+
+export function posString(pos: position | null) {
+  return pos ? `[${pos.x}, ${pos.y}]` : "oob";
+}
+
+export function rotateClockwise(dir: position) {
+  const newDir = {
+    "[0, -1]": { x: 1, y: 0 },
+    "[1, 0]": { x: 0, y: 1 },
+    "[0, 1]": { x: -1, y: 0 },
+    "[-1, 0]": { x: 0, y: -1 },
+  }[posString(dir)];
+  if(!newDir) throw Error("Invalid direction");
+  return newDir;
 }
