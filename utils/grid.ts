@@ -1,5 +1,6 @@
 import { lines } from "./helpers";
 import pipe from "./pipe";
+import Vec2i from "./vec2";
 
 // Infinite loop protection for wrapped grids
 const readMax = 1000;
@@ -12,7 +13,7 @@ export type GridOptions = {
 export default class Grid {
   width: number;
   height: number;
-  data: string;
+  data: string[];
   wrap: boolean;
   diagonal: boolean;
   constructor(input: string, options?: GridOptions) {
@@ -24,145 +25,93 @@ export default class Grid {
     this.wrap = options?.wrap ?? false;
     this.diagonal = options?.diagonal ?? false;
 
-    this.data = data.join("");
+    this.data = data.join("").split("");
   }
 
   *nodes() {
     for (let y = 0; y < this.height; ++y) {
       for (let x = 0; x < this.width; ++x) {
-        yield this.node(x, y);
+        yield new Vec2i(x, y);
       }
     }
   }
 
-  node(x: number, y: number) {
-    ({x, y} = this.#posFromCoords(x, y)!);
-    return {
-      data: () => this.at(x, y),
-      edges: () => this.edges(x, y),
-      pos: () => ({x, y})
-    };
+  at(pos: Vec2i) {
+    return this.data[this.#index(pos)];
   }
 
-  at(x: number, y: number) {
-    ({x, y} = this.#posFromCoords(x, y)!);
-    const index = y * this.width + (x % this.width);
-    return this.data[index];
-  } 
-
-  getRelativePos(pos: position, x: number, y: number) {
-    return this.#posFromCoords(pos.x + x, pos.y + y);
+  getRelativePos(pos: Vec2i, delta: Vec2i) {
+    return this.#constrain(pos.add(delta));
   }
 
-  write(x: number, y: number, character: string) {
-    ({x, y} = this.#posFromCoords(x, y)!);
-    const index = y * this.width + (x % this.width);
-    this.data = this.data.substring(0, index) + character + this.data.substring(index+1);
+  write(pos: Vec2i, character: string) {
+    const index = this.#index(pos);
+    this.data[index] = character;
   }
 
   find(character: string) {
-    for(const node of this.nodes()) {
-      if(node.data() === character) return node;
+    for (const node of this.nodes()) {
+      if (this.at(node) === character) return node;
     }
   }
 
   findAll(character: string) {
-    let result: node[] = [];
-    for(const node of this.nodes()) {
-      if(node.data() === character) result.push(node);
-    }
-    return result;
+    return this.nodes().filter((n) => this.at(n) === character);
   }
 
   toString() {
     let result = "";
-    for(let i = 0; i < this.height; ++i) {
-      result += this.data.substring(i * this.width, (i+1) * this.width) + "\r\n";
+    for (let y = 0; y < this.height; ++y) {
+      for (let x = 0; x < this.width; ++x) {
+        result += this.at(new Vec2i(x, y));
+      }
+      result += "\r\n";
     }
     return result;
   }
 
-  *edges(x: number, y: number) {
-    for (let y1 = y - 1; y1 <= y + 1; ++y1) {
-      for (let x1 = x - 1; x1 <= x + 1; ++x1) {
-        const origin = this.#posFromCoords(x, y);
-        const dest = this.#posFromCoords(x1, y1);
-        if(!origin || !dest) continue; // oob
-        if (equal(origin, dest)) continue; // self
+  *edges(pos: Vec2i) {
+    for (let y = pos.y - 1; y <= pos.y + 1; ++y) {
+      for (let x = pos.x - 1; x <= pos.x + 1; ++x) {
+        const origin = this.#constrain(pos);
+        const dest = this.#constrain(new Vec2i(x, y));
+        if (!origin || !dest) continue; // oob
+        if (origin.equals(dest)) continue;
         const direction = this.#delta(origin, dest);
-        if(!this.diagonal && Math.abs(direction.x) + Math.abs(direction.y) > 1) continue; // diagonal
-        yield this.node(x1, y1);
+        if (!this.diagonal && direction.isDiagonal) continue;
+        yield dest;
       }
     }
   }
 
-  *getReader(start: position, next: position) {
-    const delta = this.#delta(start, next);
-    let current: position | null = start;
-    let steps = 0;
-    while(current !== null && ++steps < readMax) {
-        yield this.node(current.x, current.y).data();
-        current = this.#posFromCoords(current.x + delta.x, current.y + delta.y);
-    }
-  }
-
-  *getVector(start: position, next: position) {
-    const delta = this.#delta(start, next);
-    let current: position | null = start;
-    let steps = 0;
-    while(current !== null && ++steps < readMax) {
-        yield this.node(current.x, current.y);
-        current = this.#posFromCoords(current.x + delta.x, current.y + delta.y);
-    }
-  }
-
-  #posFromCoords(x: number, y: number): position | null {
+  #constrain({ x, y }: Vec2i): Vec2i | null {
     if (this.wrap) {
       x = (x + this.width) % this.width;
       y = (y + this.height) % this.height;
     }
     if (!(x >= 0 && x < this.width && y >= 0 && y < this.height)) return null;
-    return { x, y };
+    return new Vec2i(x, y);
   }
 
-  #delta(first: position, second: position) {
+  #index(pos: Vec2i) {
+    const { x, y } = this.#constrain(pos)!;
+    return y * this.width + (x % this.width);
+  }
+
+  #delta(first: Vec2i, second: Vec2i) {
     let deltaX = second.x - first.x;
     let deltaY = second.y - first.y;
-    if(this.wrap) {
-        deltaX = absMin(deltaX, deltaX - this.width, deltaX + this.width);
-        deltaY = absMin(deltaY, deltaY - this.width, deltaY + this.width);
+    if (this.wrap) {
+      deltaX = closestToZero(deltaX, deltaX - this.width, deltaX + this.width);
+      deltaY = closestToZero(deltaY, deltaY - this.width, deltaY + this.width);
     }
-    return { x: deltaX, y: deltaY };
+    return new Vec2i(deltaX, deltaY);
   }
 }
 
-export type position = { x: number; y: number };
-
-export type node = {
-  data: () => string,
-  edges: () => Generator<node, any, any>,
-  pos: () => position
-}
-
-function equal(first: position, second: position) {
-    return first.x === second.x && first.y === second.y;
-}
-
-function absMin(...numbers: number[]) {
-    return numbers.reduce((acc, curr) => Math.abs(curr) < Math.abs(acc) ? curr : acc, numbers[0]);
-}
-
-export function posString(pos: position | null) {
-  return pos ? `[${pos.x}, ${pos.y}]` : "oob";
-}
-
-export function rotateClockwise(dir: position) {
-  const newDir = {
-    "[0, -1]": { x: 1, y: 0 },
-    "[1, 0]": { x: 0, y: 1 },
-    "[0, 1]": { x: -1, y: 0 },
-    "[-1, 0]": { x: 0, y: -1 },
-  }[posString(dir)];
-  if(!newDir) throw Error("Invalid direction");
-  return newDir;
+function closestToZero(...numbers: number[]) {
+  return numbers.reduce(
+    (acc, curr) => (Math.abs(curr) < Math.abs(acc) ? curr : acc),
+    numbers[0]
+  );
 }

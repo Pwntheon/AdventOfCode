@@ -2,7 +2,7 @@ import { test } from "./test";
 
 // Slightly higher epsilon than minimum, to allow for
 // more than one operation without rounding in between
-const EPSILON = Number.EPSILON * 10;
+const EPSILON = Number.EPSILON * 100;
 
 export default class Vec2i {
   readonly #x: number;
@@ -24,6 +24,14 @@ export default class Vec2i {
 
   get y() {
     return this.#y;
+  }
+
+  get isStraight() {
+    return this.x === 0 || this.y === 0
+  }
+
+  get isDiagonal() {
+    return !this.isStraight
   }
 
   toString() {
@@ -92,5 +100,8 @@ if(process.env.TEST === "true") {
     test(east.toString(), "[1,0]", "rot(90)");
     test(south.toString(), "[0,1]", "rot(180)");
     test(west.toString(), "[-1,0]", "rot(270)");
-    
+
+    test(north.isStraight, true);
+    test(SE5.isDiagonal, true);
+  
 }

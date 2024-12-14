@@ -1,5 +1,5 @@
 import { test, load, pipe } from "@utils";
-import Grid, { node, position, posString, rotateClockwise } from "utils/grid";
+import Grid, { node, position, posString, rotateClockwise } from "./grid";
 
 const WALL = "#";
 const GUARD = "^";
