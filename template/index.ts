@@ -13,6 +13,8 @@ const part1 = (input: typeof data) => {
   const solver = pipe<typeof data>()
 
   let result = solver(input);
+  
+  result = "Not solved";
   return result;
 };
 
@@ -20,6 +22,8 @@ const part2 = (input: typeof data) => {
   const solver = pipe<typeof data>()
 
   let result = solver(input);
+
+  result = "Not solved";
   return result;
 };
 

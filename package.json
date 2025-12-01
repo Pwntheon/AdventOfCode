@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "start": "set YEAR=2024&&set NODE_PATH=./&& tsx index.ts",
+    "start": "set YEAR=2025&&set NODE_PATH=./&& tsx index.ts",
     "util": "set NODE_PATH=./&& tsx utiltest.ts",
     "test": "test"
   },
