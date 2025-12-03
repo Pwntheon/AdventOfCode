@@ -32,6 +32,10 @@ function split(token: string | null) {
     }
 }
 
+export function flat<T>(input: T[][]): T[] {
+    return input.flat();
+}
+
 /*
 For some reason this doesn't work with pipe, it misreads the result type :\
 Thus, we make it internal and export explicit versions.
