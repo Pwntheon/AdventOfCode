@@ -2,9 +2,6 @@ import { lines } from "./helpers";
 import pipe from "./pipe";
 import Vec2i from "./vec2";
 
-// Infinite loop protection for wrapped grids
-const readMax = 1000;
-
 export type GridOptions = {
   wrap?: boolean;
   diagonal?: boolean;

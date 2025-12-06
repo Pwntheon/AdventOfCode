@@ -10,6 +10,10 @@ function sum(i: number[]) {
     return i.reduce((acc,curr) => acc+curr, 0);
 }
 
+function mul(i: number[]) {
+    return i.reduce((acc, curr) => acc*curr, 1);
+}
+
 function match(exp: RegExp) {
     return (i: string) => Array.from(i.matchAll(exp), e => e[0]);
 }
@@ -23,7 +27,7 @@ function rotate<T extends any[][]>(i: T): T {
     return result as T;
 }
 
-function split(token: string | null) {
+function split(token?: string) {
     const splitter = typeof token === "string" 
         ? (i: string) => i.trim().split(token)
         : (i: string) => i.trim().split(/\s+/);
@@ -60,6 +64,7 @@ export {
     lines,
     map,
     sum,
+    mul,
     split,
     rotate,
     match,
