@@ -6,14 +6,24 @@ import Vec3 from "utils/vec3";
 const parseInput = pipe<string>()
   .then(lines);
 
-const distanceCache: Record<string, number> = {};
-function getCachedDistance(a: Vec3, b: Vec3) {
-  const key = `${a.toString()}-${b.toString()}`;
-  const result = distanceCache[key];
-  if(result) return result;
-  const calculated = a.distance(b);
-  distanceCache[key] = calculated;
-  return calculated;
+type Connection = {a: number, b: number, dist: number};
+
+function buildCache(nodes: Vec3[]) {
+  console.time("Building cache over distance between node map of size " + nodes.length)
+  const cache: Connection[] = [];
+  for(let a = 0; a < nodes.length; ++a) {
+    // if a < b, we have already calculated the distance for
+    // that pair, so b's initial value is set to a. This saves
+    // us for looking for reverse duplicates (e.g. [1, 2] [2, 1])
+    for(let b = a; b < nodes.length; ++b) {
+      if(a === b) continue;
+      cache.push({ a, b, dist: nodes[a].distance(nodes[b])});
+    }
+  }
+  cache.sort((a, b) => a.dist - b.dist);
+  console.timeEnd("Building cache over distance between node map of size " + nodes.length)
+  console.log(`${nodes.length} nodes resulted in ${cache.length} connections`)
+  return cache;
 }
 
 function lineToVec3(input: string) {
@@ -24,54 +34,40 @@ function lineToVec3(input: string) {
   return new Vec3(x, y, z);  
 }
 
-function getClosest(boxes: Vec3[], junctions: number[][]) {
-  let a = 0;
-  let b = 0;
-  let distance = Number.MAX_SAFE_INTEGER;
-  for(let self = 0; self < boxes.length; ++self) {
-    for(let other = 0; other < boxes.length; ++other) {
-      // Cannot link to self
-      if(self === other) continue;
-      // There is already a junction between
-      if(junctions.some(j => j.includes(self) && j.includes(other))) {
-        continue;
-      }
-      const currentDistance = getCachedDistance(boxes[self], boxes[other]);
-      if(currentDistance < distance) {
-        a = self;
-        b = other;
-        distance = currentDistance
-      }
-    }
-  }
-  return [a, b];
+function getCircuits(connections: Connection[]) {
+  let result: number[][] = []
+  connections.forEach((connection) => {
+    result.push([connection.a, connection.b]);
+  });
+
+ return mergeAll(result)
 }
 
-function mergeJunctions(junctions: number[][], toAdd: number[]) {
-  if(toAdd.length !== 2) throw "cannot add new junction of size != 2";
-  for(let i = 0; i < junctions.length; ++i) {
-    if(junctions[i].includes(toAdd[0])) {
-      junctions[i].push(toAdd[1]);
-      junctions.sort((a, b) => b.length - a.length);
-      return;
-    }
-    if(junctions[i].includes(toAdd[1])) {
-      junctions[i].push(toAdd[0]);
-      junctions.sort((a, b) => b.length - a.length);
-      return;
-    }
-  }
-  junctions.push([...toAdd]);
-  junctions.sort((a, b) => b.length - a.length);
+function mergeAll(circuits: number[][]) {
+  let lengthBefore: number;
+  do{
+    lengthBefore = circuits.length;
+    circuits = mergeOnce(circuits);
+  } while (circuits.length !== lengthBefore)
+    return circuits;
 }
 
-function makeConnections(boxes: Vec3[], junctions: number[][], iterations: number) {
-  for(let i = 0; i < iterations; ++i) {
-    console.time("Iteration " + i);
-    const shortestJunction = getClosest(boxes, junctions);
-    mergeJunctions(junctions, shortestJunction);
-    console.timeEnd("Iteration " + i);
+
+function mergeOnce(circuits: number[][]) {
+  let result: number[][] = [];
+  while(circuits.length) {
+    let candidate = circuits.pop()!;
+    let mergeIndex = result.findIndex(circuit => circuit.some(n => candidate.includes(n)));
+    if(mergeIndex >= 0) {
+      // console.log(`Merging ${candidate} and ${result[mergeIndex]}`)
+      result[mergeIndex] = Array.from(new Set([...(result[mergeIndex]), ...candidate]));
+      
+      // console.log(`Result: ${result[mergeIndex]}`)
+    } else {
+      result.push(candidate);
+    }
   }
+  return result.sort((a, b) => b.length - a.length);
 }
 
 // Load data, and expose testing functions.
@@ -80,23 +76,30 @@ function makeConnections(boxes: Vec3[], junctions: number[][], iterations: numbe
 // loadFile loads content of ./{filename} useful for more elaborate examples
 const {data, loadRaw, loadFile} = load(parseInput);
 
-const part1 = (input: typeof data) => {
-  const nodes = input.map(lineToVec3);
-  const junctions: number[][] = nodes.map((_, i) => [i]);
+const cache = buildCache(data.map(lineToVec3));
 
-  makeConnections(nodes, junctions, 1000);
-
-
-  let result = junctions[0].length * junctions[1].length * junctions[2].length;
-  return result;
+const part1 = (input: typeof cache) => {
+  const shortestThousand = input.slice(0, 1000);
+  const circuits = getCircuits(shortestThousand);
+  return circuits[0].length * circuits[1].length * circuits[2].length;
 };
 
-const part2 = (input: typeof data) => {
-  const solver = pipe<typeof data>()
-
-  let result = solver(input);
-
-  return "Not solved";
+const part2 = (input: typeof cache) => {
+  let circuits: number[][] = getCircuits(input.slice(0, 1000));
+  let finalNode: Connection | null = null;
+  for(let i = 1000; i < input.length; ++i) {
+    const newCircuit = [input[i].a, input[i].b];
+    circuits.push(newCircuit);
+    circuits = mergeAll(circuits);
+    if(circuits[0].length === data.length) {
+      finalNode = input[i];
+      break;
+    }
+  }
+  const firstCoord = lineToVec3(data[finalNode!.a]).x;
+  const secondCoord = lineToVec3(data[finalNode!.b]).x;
+  
+  return firstCoord * secondCoord;
 };
 
 // Base test - check that input is not empty
@@ -104,29 +107,22 @@ test(load(d => d).data.length > 0, true, "Has input");
 test(lineToVec3("1,2,3").toString(), "[1,2,3]", "Vec3 parsing")
 
 
-const testBoxes = loadFile("example.txt").map(lineToVec3);
-test(getClosest(testBoxes, []), [0, 19], "GetClosest")
-test(getClosest(testBoxes, [[0, 19]]), [0, 7], "GetClosest")
-
-let testJunctions = [[1, 2, 3], [7, 8], [100]];
-mergeJunctions(testJunctions, [2, 19])
-mergeJunctions(testJunctions, [100, 98])
-mergeJunctions(testJunctions, [98, 105])
-test(testJunctions, [[1, 2, 3, 19], [100, 98, 105], [7, 8] ], "Merge junctions")
 
 const example = loadFile("example.txt").map(lineToVec3);
-const junctions: number[][] = example.map((_, i) => [i]);
-makeConnections(example, junctions, 10);
-test(junctions[0].length * junctions[1].length * junctions[2].length, 40, "Example answer")
+const exampleCache = buildCache(example);
+const tenShortest = exampleCache.slice(0, 10);
+const circuits = getCircuits(tenShortest);
+test(circuits[0].length * circuits[1].length * circuits[2].length, 40, "Example count")
+
 
 
 // Time and log results
 console.time("Part 1");
-const resultA = part1(data);
+const resultA = part1(cache);
 console.timeEnd("Part 1");
 console.log("First answer:", resultA);
 
 console.time("Part 2");
-const resultB = part2(data);
+const resultB = part2(cache);
 console.timeEnd("Part 2");
 console.log("Second answer:", resultB);
