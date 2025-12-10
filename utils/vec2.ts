@@ -82,6 +82,8 @@ export const Unit = {
     NW: new Vec2i(-1, -1)
 };
 
+
+console.log("vec2 ran")
 if(process.env.TEST === "true") {
 
     const SE = new Vec2i(1, -1);
@@ -101,7 +103,7 @@ if(process.env.TEST === "true") {
     test(south.toString(), "[0,1]", "rot(180)");
     test(west.toString(), "[-1,0]", "rot(270)");
 
-    test(north.isStraight, true);
-    test(SE5.isDiagonal, true);
+    test(north.isStraight, true, "isStraight");
+    test(SE5.isDiagonal, true, "isDiagonal");
   
 }

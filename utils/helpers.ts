@@ -1,3 +1,5 @@
+import { writeFileSync } from "fs";
+
 function lines(i: string) {
     return i.split(/\r?\n/)
 }
@@ -59,6 +61,16 @@ function toIntS(i: string): number{
     return _toInt(i);
 }
 
+function logToFile(data: string) {
+    writeFileSync("log.txt", data);
+}
+
+function logProgress(data: string) {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    process.stdout.write(data);
+}
+
 
 export {
     lines,
@@ -68,6 +80,8 @@ export {
     split,
     rotate,
     match,
+    logToFile,
+    logProgress,
     toInt, // plural
     toIntS // singular
 };
